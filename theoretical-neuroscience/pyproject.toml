@@ -1,0 +1,57 @@
+[tool.poetry]
+name = "theoretical-neuroscience"
+version = "0.1.0"
+description = "Computational and mathematical neuroscience models implemented in Python (Dayan & Abbott inspired)."
+authors = ["Diogo <your.email@example.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{ include = "tneuro", from = "src" }]
+repository = "https://github.com/<you>/theoretical-neuroscience"
+documentation = "https://<you>.github.io/theoretical-neuroscience"
+keywords = ["neuroscience", "computational-neuroscience", "spike-trains", "information-theory", "lif"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Typing :: Typed",
+  "License :: OSI Approved :: MIT License",
+  "Development Status :: 3 - Alpha"
+]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.14"
+numpy = ">=1.24"
+scipy = ">=1.10"
+matplotlib = { version = ">=3.7", optional = true }
+
+[tool.poetry.extras]
+plot = ["matplotlib"]
+
+[tool.poetry.group.dev.dependencies]
+pytest = ">=8.0"
+pytest-cov = ">=5.0"
+ruff = ">=0.6"
+mypy = ">=1.10"
+pre-commit = ">=3.7"
+types-setuptools = "*"
+
+[build-system]
+requires = ["poetry-core>=1.9.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+select = ["E", "F", "I", "B", "UP", "N", "SIM"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+no_implicit_optional = true
+strict_equality = true
+pretty = true
+
+[tool.pytest.ini_options]
+addopts = "-q --disable-warnings --maxfail=1"
+testpaths = ["tests"]
