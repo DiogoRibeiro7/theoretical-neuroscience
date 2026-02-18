@@ -1,0 +1,177 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+from math import lgamma
+from typing import Tuple
+
+import numpy as np
+
+from tneuro.utils.validate import require_1d_float_array, require_non_negative_scalar
+
+
+@dataclass(frozen=True, slots=True)
+class PoissonGLMResult:
+    """Result of Poisson GLM fitting."""
+
+    coef: np.ndarray
+    se: np.ndarray
+    log_likelihood: float
+    n_iter: int
+    converged: bool
+
+
+def build_design_matrix(
+    stim: np.ndarray,
+    lags: np.ndarray,
+    *,
+    add_intercept: bool = True,
+) -> Tuple[np.ndarray, np.ndarray]:
+    """Construct a design matrix from a 1D stimulus and integer lags.
+
+    Parameters
+    ----------
+    stim:
+        1D stimulus array.
+    lags:
+        1D integer lags in samples (negative values look back in time).
+    add_intercept:
+        Whether to add a column of ones.
+
+    Returns
+    -------
+    X:
+        Design matrix with shape (n_samples_valid, n_lags + intercept).
+    valid_idx:
+        Indices into the original stimulus where all lags are valid.
+    """
+    x = require_1d_float_array(stim, name="stim")
+    lags_arr = np.asarray(lags, dtype=int)
+    if lags_arr.ndim != 1 or lags_arr.size == 0:
+        raise ValueError("lags must be a non-empty 1D array of integers.")
+
+    min_lag = int(np.min(lags_arr))
+    max_lag = int(np.max(lags_arr))
+    start = max(0, -min_lag)
+    stop = x.size - max_lag
+    if stop <= start:
+        raise ValueError("lags are incompatible with stim length.")
+
+    valid_idx = np.arange(start, stop)
+    n_rows = valid_idx.size
+    n_lags = lags_arr.size
+
+    X = np.empty((n_rows, n_lags + (1 if add_intercept else 0)), dtype=float)
+    col = 0
+    if add_intercept:
+        X[:, 0] = 1.0
+        col = 1
+
+    for j, lag in enumerate(lags_arr):
+        X[:, col + j] = x[valid_idx + lag]
+
+    return X, valid_idx
+
+
+def predict_rate(X: np.ndarray, coef: np.ndarray) -> np.ndarray:
+    """Predict Poisson rate using a log link."""
+    eta = X @ coef
+    return np.exp(eta)
+
+
+def log_likelihood_poisson(y: np.ndarray, rate: np.ndarray) -> float:
+    """Poisson log-likelihood for observed counts."""
+    y_arr = np.asarray(y, dtype=float)
+    rate_arr = np.asarray(rate, dtype=float)
+    if y_arr.shape != rate_arr.shape:
+        raise ValueError("y and rate must have the same shape.")
+    if np.any(rate_arr <= 0.0) or not np.all(np.isfinite(rate_arr)):
+        raise ValueError("rate must be finite and positive.")
+    return float(np.sum(y_arr * np.log(rate_arr) - rate_arr - np.vectorize(lgamma)(y_arr + 1.0)))
+
+
+def fit_poisson_glm(
+    stim: np.ndarray,
+    spikes: np.ndarray,
+    lags: np.ndarray,
+    *,
+    add_intercept: bool = True,
+    max_iter: int = 100,
+    tol: float = 1e-6,
+) -> PoissonGLMResult:
+    """Fit a Poisson GLM using IRLS (log link).
+
+    Parameters
+    ----------
+    stim:
+        1D stimulus array.
+    spikes:
+        1D spike counts aligned to ``stim``.
+    lags:
+        1D integer lags in samples.
+    add_intercept:
+        Whether to include an intercept column in the design matrix.
+    max_iter:
+        Maximum IRLS iterations.
+    tol:
+        Convergence tolerance on coefficient change (L2 norm).
+    """
+    y = require_1d_float_array(spikes, name="spikes")
+    X, valid_idx = build_design_matrix(stim, lags, add_intercept=add_intercept)
+    y_valid = y[valid_idx]
+    if y_valid.shape[0] != X.shape[0]:
+        raise ValueError("spikes must align with stim after lagging.")
+    if np.any(y_valid < 0.0) or not np.all(np.isfinite(y_valid)):
+        raise ValueError("spikes must be finite and non-negative.")
+
+    require_non_negative_scalar(tol, name="tol")
+    if max_iter <= 0:
+        raise ValueError("max_iter must be positive.")
+
+    n_features = X.shape[1]
+    coef = np.zeros(n_features, dtype=float)
+    converged = False
+
+    for i in range(max_iter):
+        eta = X @ coef
+        mu = np.exp(eta)
+        W = mu
+        z = eta + (y_valid - mu) / mu
+
+        xtw = X.T * W
+        fisher = xtw @ X
+        rhs = xtw @ z
+        try:
+            coef_new = np.linalg.solve(fisher, rhs)
+        except np.linalg.LinAlgError:
+            coef_new = np.linalg.lstsq(fisher, rhs, rcond=None)[0]
+
+        if np.linalg.norm(coef_new - coef) <= tol:
+            coef = coef_new
+            converged = True
+            n_iter = i + 1
+            break
+        coef = coef_new
+    else:
+        n_iter = max_iter
+
+    eta = X @ coef
+    mu = np.exp(eta)
+    xtw = X.T * mu
+    fisher = xtw @ X
+    try:
+        cov = np.linalg.inv(fisher)
+    except np.linalg.LinAlgError:
+        cov = np.linalg.pinv(fisher)
+    se = np.sqrt(np.diag(cov))
+    ll = log_likelihood_poisson(y_valid, mu)
+
+    return PoissonGLMResult(coef=coef, se=se, log_likelihood=ll, n_iter=n_iter, converged=converged)
+
+
+__all__ = [
+    "PoissonGLMResult",
+    "build_design_matrix",
+    "fit_poisson_glm",
+    "predict_rate",
+    "log_likelihood_poisson",
+]

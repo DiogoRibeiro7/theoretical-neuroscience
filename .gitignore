@@ -12,3 +12,6 @@ dist/
 .venv/
 .env
 .DS_Store
+
+
+ROADMAP_TEST.md

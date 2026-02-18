@@ -69,14 +69,30 @@ class SpikeTrain:
         return int(self.times_s.size)
 
     def rate_hz(self) -> float:
-        """Mean firing rate (Hz) over the window."""
+        """Mean firing rate (Hz) over the recording window.
+
+        Examples
+        --------
+        >>> import numpy as np
+        >>> st = SpikeTrain(times_s=np.array([0.1, 0.6, 0.9]), t_start_s=0.0, t_stop_s=1.0)
+        >>> st.rate_hz()
+        3.0
+        """
         dur = self.duration_s()
         if dur <= 0.0:
             return float("nan")
         return self.n_spikes() / dur
 
     def isi_s(self) -> np.ndarray:
-        """Inter-spike intervals (seconds). Empty if <2 spikes."""
+        """Inter-spike intervals (seconds). Empty if fewer than 2 spikes.
+
+        Examples
+        --------
+        >>> import numpy as np
+        >>> st = SpikeTrain(times_s=np.array([0.1, 0.4, 1.0]), t_start_s=0.0, t_stop_s=2.0)
+        >>> st.isi_s()
+        array([0.3, 0.6])
+        """
         if self.times_s.size < 2:
             return np.asarray([], dtype=float)
         return np.diff(self.times_s)
@@ -108,6 +124,16 @@ class SpikeTrain:
             Bin edges (seconds), length = n_bins + 1
         counts:
             Spike counts per bin, length = n_bins
+
+        Examples
+        --------
+        >>> import numpy as np
+        >>> st = SpikeTrain(times_s=np.array([0.1, 0.4, 1.2]), t_start_s=0.0, t_stop_s=2.0)
+        >>> edges_s, counts = st.bin_counts(bin_width_s=0.5)
+        >>> edges_s
+        array([0. , 0.5, 1. , 1.5, 2. ])
+        >>> counts
+        array([2, 0, 1, 0])
         """
         w = require_positive_scalar(bin_width_s, name="bin_width_s")
         edges = np.arange(self.t_start_s, self.t_stop_s + w, w, dtype=float)

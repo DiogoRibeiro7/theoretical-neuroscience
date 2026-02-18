@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 import numpy as np
 
 
-def entropy_discrete(x: Any, *, base: float = 2.0) -> float:
+def entropy_discrete(x: Any, *, base: float = 2.0, method: str = "plugin") -> float:
     """Shannon entropy of a 1D discrete variable.
 
     Parameters
@@ -14,6 +14,8 @@ def entropy_discrete(x: Any, *, base: float = 2.0) -> float:
         Observations (any hashable values). Converted to a NumPy array.
     base:
         Log base. Use 2.0 for bits, np.e for nats.
+    method:
+        Estimator to use: ``"plugin"`` (maximum likelihood) or ``"miller_madow"``.
 
     Returns
     -------
@@ -22,11 +24,17 @@ def entropy_discrete(x: Any, *, base: float = 2.0) -> float:
 
     Notes
     -----
-    This is the plug-in estimator (maximum likelihood). It is biased for small samples.
-    Bias-corrected estimators can be added later (Miller-Madow, NSB, etc.).
+    The plug-in estimator is biased for small samples. Miller-Madow adds a
+    first-order correction: (k - 1) / (2 n ln(base)), where k is the number
+    of observed categories and n is the sample size. This correction is only
+    approximate and can still be biased when sample sizes are very small or
+    when many categories are unobserved.
     """
     if base <= 0.0 or not np.isfinite(base):
         raise ValueError("base must be finite and > 0")
+
+    if method not in {"plugin", "miller_madow"}:
+        raise ValueError("method must be 'plugin' or 'miller_madow'")
 
     arr = np.asarray(x)
     if arr.ndim != 1:
@@ -41,4 +49,10 @@ def entropy_discrete(x: Any, *, base: float = 2.0) -> float:
 
     # avoid log(0); p is strictly positive from counts
     h = -np.sum(p * (np.log(p) / np.log(base)))
-    return float(h)
+    if method == "plugin":
+        return float(h)
+
+    k = float(counts.size)
+    n = float(arr.size)
+    correction = (k - 1.0) / (2.0 * n * np.log(base))
+    return float(h + correction)

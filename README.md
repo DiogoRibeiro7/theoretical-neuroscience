@@ -53,6 +53,36 @@ x = np.array([0, 0, 1, 1, 1, 2])
 print(entropy_discrete(x, base=2.0))
 ```
 
+## API overview (stable)
+
+Current stable API surface (import paths shown):
+
+- `tneuro`: `SpikeTrain`, `LIFParams`, `simulate_lif`
+- `tneuro.spiketrain`: `SpikeTrain`, `fano_factor_counts`, `fano_factor_spiketrain`
+- `tneuro.neurons`: `LIFParams`, `simulate_lif`
+- `tneuro.information`: `entropy_discrete`
+
+Short examples:
+
+```python
+import numpy as np
+from tneuro import SpikeTrain
+
+st = SpikeTrain(times_s=np.array([0.1, 0.13, 0.9, 1.2]), t_start_s=0.0, t_stop_s=2.0)
+edges_s, counts = st.bin_counts(bin_width_s=0.5)
+print(edges_s, counts)
+```
+
+```python
+import numpy as np
+from tneuro import SpikeTrain
+from tneuro.spiketrain.stats import fano_factor_spiketrain
+
+st = SpikeTrain(times_s=np.array([0.1, 0.13, 0.9, 1.2]), t_start_s=0.0, t_stop_s=2.0)
+ff = fano_factor_spiketrain(st, bin_width_s=0.5)
+print(ff)
+```
+
 ## Development
 
 This repo uses **Poetry** and a **src/** layout.
@@ -62,6 +92,7 @@ poetry install
 poetry run ruff check .
 poetry run mypy src/tneuro
 poetry run pytest
+poetry run pre-commit install
 ```
 
 ## Roadmap

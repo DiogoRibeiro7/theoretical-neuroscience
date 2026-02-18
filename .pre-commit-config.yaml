@@ -1,0 +1,19 @@
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-check
+        name: ruff (lint)
+        entry: poetry run ruff check
+        language: system
+        types: [python]
+      - id: ruff-format
+        name: ruff (format)
+        entry: poetry run ruff format
+        language: system
+        types: [python]
+      - id: mypy
+        name: mypy
+        entry: poetry run mypy src/tneuro
+        language: system
+        pass_filenames: false
+        files: ^src/tneuro/

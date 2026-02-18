@@ -53,5 +53,6 @@ strict_equality = true
 pretty = true
 
 [tool.pytest.ini_options]
-addopts = "-q --disable-warnings --maxfail=1"
-testpaths = ["tests"]
+addopts = "-q --disable-warnings --maxfail=1 --doctest-modules"
+testpaths = ["tests", "src"]
+pythonpath = ["src"]
