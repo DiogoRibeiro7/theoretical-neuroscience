@@ -5,7 +5,6 @@ from math import lgamma
 import numpy as np
 
 from tneuro.typing import ArrayF, ArrayI
-
 from tneuro.utils.validate import require_1d_float_array, require_non_negative_scalar
 
 
