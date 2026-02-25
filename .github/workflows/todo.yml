@@ -158,6 +158,14 @@ jobs:
               "out", "target", "vendor", "docs/_build",
           }
 
+          def normalize_path(path: str) -> str:
+              path = path.replace("\\\\", "/")
+              path = path.lstrip("./")
+              repo_name = repo.split("/")[-1]
+              if path.startswith(f"{repo_name}/"):
+                  path = path[len(repo_name) + 1 :]
+              return path
+
           def iter_files(root: str):
               for base, dirs, files in os.walk(root):
                   dirs[:] = [d for d in dirs if d not in skip_dirs]
@@ -170,12 +178,13 @@ jobs:
           current_todos_by_loc = set()
           for path in iter_files("."):
               try:
+                  rel_path = normalize_path(os.path.relpath(path, "."))
                   with open(path, "r", encoding="utf-8", errors="ignore") as fh:
                       for line_no, line in enumerate(fh, start=1):
                           m = pattern.match(line)
                           if m:
                               current_todos.add(line.strip())
-                              current_todos_by_loc.add((path, line_no, line.strip()))
+                              current_todos_by_loc.add((rel_path, line_no, line.strip()))
               except OSError:
                   continue
 
@@ -204,14 +213,14 @@ jobs:
                       continue
                   body_matches = set()
                   for match in re.findall(r"([\\w./-]+\\.[A-Za-z0-9]+):([0-9]+)", body):
-                      body_matches.add((match[0], int(match[1])))
+                      body_matches.add((normalize_path(match[0]), int(match[1])))
                   for match in re.findall(r"([\\w./-]+\\.[A-Za-z0-9]+)#L([0-9]+)", body):
-                      body_matches.add((match[0], int(match[1])))
+                      body_matches.add((normalize_path(match[0]), int(match[1])))
                   for match in re.findall(
                       r"github\\.com/[^/]+/[^/]+/blob/[^/]+/([^#]+)#L([0-9]+)(?:-L([0-9]+))?",
                       body,
                   ):
-                      path = match[0]
+                      path = normalize_path(match[0])
                       start = int(match[1])
                       end = int(match[2]) if match[2] else start
                       for line_no in range(start, end + 1):
@@ -222,7 +231,7 @@ jobs:
                       body,
                       re.MULTILINE,
                   ):
-                      path = match[0].strip()
+                      path = normalize_path(match[0].strip())
                       start = int(match[1])
                       end = int(match[2])
                       for line_no in range(start, end + 1):
