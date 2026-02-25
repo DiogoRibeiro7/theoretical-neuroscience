@@ -2,15 +2,17 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
+from tneuro.typing import ArrayF
+
 import numpy as np
 
 from tneuro.spiketrain.core import SpikeTrain
 from tneuro.utils.validate import require_1d_float_array, require_non_negative_scalar
 
-RateFunc = Callable[[np.ndarray], np.ndarray]
+RateFunc = Callable[[ArrayF | np.ndarray], ArrayF]
 
 
-def _require_increasing_grid(t_grid_s: np.ndarray) -> None:
+def _require_increasing_grid(t_grid_s: ArrayF | np.ndarray) -> None:
     if t_grid_s.size < 2:
         raise ValueError("t_grid_s must have at least 2 points.")
     if not np.all(np.isfinite(t_grid_s)):
@@ -19,7 +21,11 @@ def _require_increasing_grid(t_grid_s: np.ndarray) -> None:
         raise ValueError("t_grid_s must be strictly increasing.")
 
 
-def _validate_rate_array(rate_hz: np.ndarray, *, name: str) -> np.ndarray:
+def _validate_rate_array(
+    rate_hz: ArrayF | np.ndarray,
+    *,
+    name: str,
+) -> ArrayF:
     rate = np.asarray(rate_hz, dtype=float)
     if rate.ndim != 1:
         raise ValueError(f"{name} must be 1D, got shape={rate.shape}")
@@ -30,11 +36,23 @@ def _validate_rate_array(rate_hz: np.ndarray, *, name: str) -> np.ndarray:
     return rate
 
 
-def _rate_from_grid(t: np.ndarray, *, t_grid_s: np.ndarray, rate_hz: np.ndarray) -> np.ndarray:
-    return np.interp(t, t_grid_s, rate_hz, left=rate_hz[0], right=rate_hz[-1])
+def _rate_from_grid(
+    t: ArrayF | np.ndarray,
+    *,
+    t_grid_s: ArrayF | np.ndarray,
+    rate_hz: ArrayF | np.ndarray,
+) -> ArrayF:
+    return np.asarray(
+        np.interp(t, t_grid_s, rate_hz, left=rate_hz[0], right=rate_hz[-1]),
+        dtype=float,
+    )
 
 
-def _rate_from_callable(t: np.ndarray, *, rate_fn: RateFunc) -> np.ndarray:
+def _rate_from_callable(
+    t: ArrayF | np.ndarray,
+    *,
+    rate_fn: RateFunc,
+) -> ArrayF:
     rate = np.asarray(rate_fn(t), dtype=float)
     if rate.shape != t.shape:
         raise ValueError("rate_hz callable must return an array with the same shape as input.")
@@ -46,11 +64,11 @@ def _rate_from_callable(t: np.ndarray, *, rate_fn: RateFunc) -> np.ndarray:
 
 
 def generate_inhom_poisson(
-    rate_hz: RateFunc | np.ndarray,
+    rate_hz: RateFunc | ArrayF | np.ndarray,
     *,
     t_start_s: float,
     t_stop_s: float,
-    t_grid_s: np.ndarray | None = None,
+    t_grid_s: ArrayF | np.ndarray | None = None,
     rate_hz_max: float | None = None,
     seed: int | None = None,
 ) -> SpikeTrain:
