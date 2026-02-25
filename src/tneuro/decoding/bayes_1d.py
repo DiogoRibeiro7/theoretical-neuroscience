@@ -4,19 +4,20 @@ from math import lgamma
 
 import numpy as np
 
+from tneuro.typing import ArrayF, ArrayI
 from tneuro.utils.validate import require_1d_float_array, require_non_negative_scalar
 
 
 def decode_position(
-    spike_counts: np.ndarray,
+    spike_counts: ArrayI | ArrayF | np.ndarray,
     *,
-    pos_grid: np.ndarray,
-    place_centers: np.ndarray,
-    place_width: float | np.ndarray,
-    peak_rate_hz: float | np.ndarray = 20.0,
+    pos_grid: ArrayF | np.ndarray,
+    place_centers: ArrayF | np.ndarray,
+    place_width: float | ArrayF | np.ndarray,
+    peak_rate_hz: float | ArrayF | np.ndarray = 20.0,
     dt_s: float = 0.1,
-    prior: np.ndarray | None = None,
-) -> tuple[np.ndarray, np.ndarray]:
+    prior: ArrayF | np.ndarray | None = None,
+) -> tuple[ArrayF, ArrayF]:
     """Decode position from place-cell spike counts with a Poisson model.
 
     Parameters
@@ -44,14 +45,14 @@ def decode_position(
     pos_grid:
         The position grid (returned for convenience).
     """
-    pos = require_1d_float_array(pos_grid, name="pos_grid")
-    centers = require_1d_float_array(place_centers, name="place_centers")
+    pos: ArrayF = require_1d_float_array(pos_grid, name="pos_grid")
+    centers: ArrayF = require_1d_float_array(place_centers, name="place_centers")
     n_neurons = centers.size
     dt = require_non_negative_scalar(dt_s, name="dt_s")
     if dt == 0.0:
         raise ValueError("dt_s must be positive.")
 
-    widths = np.asarray(place_width, dtype=float)
+    widths: ArrayF = np.asarray(place_width, dtype=float)
     if widths.ndim == 0:
         widths = np.full(n_neurons, float(widths), dtype=float)
     if widths.ndim != 1 or widths.shape[0] != n_neurons:
@@ -59,7 +60,7 @@ def decode_position(
     if np.any(widths <= 0.0) or not np.all(np.isfinite(widths)):
         raise ValueError("place_width must be finite and positive.")
 
-    peaks = np.asarray(peak_rate_hz, dtype=float)
+    peaks: ArrayF = np.asarray(peak_rate_hz, dtype=float)
     if peaks.ndim == 0:
         peaks = np.full(n_neurons, float(peaks), dtype=float)
     if peaks.ndim != 1 or peaks.shape[0] != n_neurons:
@@ -67,7 +68,7 @@ def decode_position(
     if np.any(peaks < 0.0) or not np.all(np.isfinite(peaks)):
         raise ValueError("peak_rate_hz must be finite and non-negative.")
 
-    spikes = np.asarray(spike_counts, dtype=float)
+    spikes: ArrayF = np.asarray(spike_counts, dtype=float)
     if spikes.ndim == 1:
         spikes = spikes[:, None]
     elif spikes.ndim == 2:
@@ -83,7 +84,7 @@ def decode_position(
         raise ValueError("spike_counts must be finite and non-negative.")
 
     if prior is None:
-        prior_arr = np.full(pos.size, 1.0 / pos.size, dtype=float)
+        prior_arr: ArrayF = np.full(pos.size, 1.0 / pos.size, dtype=float)
     else:
         prior_arr = require_1d_float_array(prior, name="prior")
         if prior_arr.shape != pos.shape:
@@ -93,7 +94,7 @@ def decode_position(
         s = float(np.sum(prior_arr))
         if s == 0.0:
             raise ValueError("prior must sum to a positive value.")
-        prior_arr = prior_arr / s
+        prior_arr = np.asarray(prior_arr / s, dtype=float)
 
     pos_row = pos[None, :]
     centers_col = centers[:, None]
@@ -105,7 +106,7 @@ def decode_position(
     log_prior = np.log(prior_arr)
 
     n_time = spikes.shape[1]
-    posterior = np.empty((n_time, pos.size), dtype=float)
+    posterior: ArrayF = np.empty((n_time, pos.size), dtype=float)
     for t in range(n_time):
         k = spikes[:, t]
         log_fact = np.vectorize(lgamma)(k + 1.0)[:, None]

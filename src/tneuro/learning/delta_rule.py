@@ -4,6 +4,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
+from tneuro.typing import ArrayF
 from tneuro.utils.validate import require_non_negative_scalar, require_positive_scalar
 
 
@@ -11,11 +12,14 @@ from tneuro.utils.validate import require_non_negative_scalar, require_positive_
 class DeltaRuleResult:
     """Result of delta rule training."""
 
-    weights: np.ndarray
-    losses: np.ndarray
+    weights: ArrayF
+    losses: ArrayF
 
 
-def _validate_supervised_xy(x: np.ndarray, y: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+def _validate_supervised_xy(
+    x: ArrayF | np.ndarray,
+    y: ArrayF | np.ndarray,
+) -> tuple[ArrayF, ArrayF]:
     x_arr = np.asarray(x, dtype=float)
     y_arr = np.asarray(y, dtype=float)
     if x_arr.ndim != 2:
@@ -30,12 +34,12 @@ def _validate_supervised_xy(x: np.ndarray, y: np.ndarray) -> tuple[np.ndarray, n
 
 
 def delta_rule_fit(
-    x: np.ndarray,
-    y: np.ndarray,
+    x: ArrayF | np.ndarray,
+    y: ArrayF | np.ndarray,
     *,
     lr: float,
     n_epochs: int,
-    w0: np.ndarray | None = None,
+    w0: ArrayF | np.ndarray | None = None,
     shuffle: bool = True,
     l2: float = 0.0,
     seed: int | None = None,
@@ -70,7 +74,7 @@ def delta_rule_fit(
 
     n_samples, n_features = x_arr.shape
     if w0 is None:
-        w = np.zeros(n_features, dtype=float)
+        w: ArrayF = np.zeros(n_features, dtype=float)
     else:
         w = np.asarray(w0, dtype=float).copy()
         if w.shape != (n_features,):
@@ -79,7 +83,7 @@ def delta_rule_fit(
             raise ValueError("w0 must be finite.")
 
     rng = np.random.default_rng(seed)
-    losses = np.empty(n_epochs_val, dtype=float)
+    losses: ArrayF = np.empty(n_epochs_val, dtype=float)
 
     for epoch in range(n_epochs_val):
         idx = rng.permutation(n_samples) if shuffle else np.arange(n_samples)
@@ -92,10 +96,13 @@ def delta_rule_fit(
         preds = x_arr @ w
         losses[epoch] = float(0.5 * np.mean((y_arr - preds) ** 2))
 
-    return DeltaRuleResult(weights=w, losses=losses)
+    return DeltaRuleResult(weights=w.astype(float), losses=losses)
 
 
-def delta_rule_predict(x: np.ndarray, weights: np.ndarray) -> np.ndarray:
+def delta_rule_predict(
+    x: ArrayF | np.ndarray,
+    weights: ArrayF | np.ndarray,
+) -> ArrayF:
     """Predict with linear weights learned by the delta rule."""
     x_arr = np.asarray(x, dtype=float)
     w = np.asarray(weights, dtype=float)
@@ -103,7 +110,7 @@ def delta_rule_predict(x: np.ndarray, weights: np.ndarray) -> np.ndarray:
         raise ValueError("x must be 2D with shape (n_samples, n_features).")
     if w.ndim != 1 or w.shape[0] != x_arr.shape[1]:
         raise ValueError("weights must be 1D with shape (n_features,).")
-    return x_arr @ w
+    return np.asarray(x_arr @ w, dtype=float)
 
 
 __all__ = [

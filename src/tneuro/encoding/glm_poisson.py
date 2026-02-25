@@ -5,6 +5,7 @@ from math import lgamma
 
 import numpy as np
 
+from tneuro.typing import ArrayF, ArrayI
 from tneuro.utils.validate import require_1d_float_array, require_non_negative_scalar
 
 
@@ -12,19 +13,19 @@ from tneuro.utils.validate import require_1d_float_array, require_non_negative_s
 class PoissonGLMResult:
     """Result of Poisson GLM fitting."""
 
-    coef: np.ndarray
-    se: np.ndarray
+    coef: ArrayF
+    se: ArrayF
     log_likelihood: float
     n_iter: int
     converged: bool
 
 
 def build_design_matrix(
-    stim: np.ndarray,
-    lags: np.ndarray,
+    stim: ArrayF | np.ndarray,
+    lags: ArrayI | np.ndarray,
     *,
     add_intercept: bool = True,
-) -> tuple[np.ndarray, np.ndarray]:
+) -> tuple[ArrayF, ArrayI]:
     """Construct a design matrix from a 1D stimulus and integer lags.
 
     Parameters
@@ -68,13 +69,13 @@ def build_design_matrix(
     for j, lag in enumerate(lags_arr):
         x_mat[:, col + j] = x[valid_idx + lag]
 
-    return x_mat, valid_idx
+    return x_mat, valid_idx.astype(np.int64)
 
 
-def predict_rate(x_mat: np.ndarray, coef: np.ndarray) -> np.ndarray:
+def predict_rate(x_mat: ArrayF | np.ndarray, coef: ArrayF | np.ndarray) -> ArrayF:
     """Predict Poisson rate using a log link."""
     eta = x_mat @ coef
-    return np.exp(eta)
+    return np.asarray(np.exp(eta), dtype=float)
 
 
 def log_likelihood_poisson(y: np.ndarray, rate: np.ndarray) -> float:
@@ -89,9 +90,9 @@ def log_likelihood_poisson(y: np.ndarray, rate: np.ndarray) -> float:
 
 
 def fit_poisson_glm(
-    stim: np.ndarray,
-    spikes: np.ndarray,
-    lags: np.ndarray,
+    stim: ArrayF | np.ndarray,
+    spikes: ArrayF | np.ndarray,
+    lags: ArrayI | np.ndarray,
     *,
     add_intercept: bool = True,
     max_iter: int = 100,

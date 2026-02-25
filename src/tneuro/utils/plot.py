@@ -1,13 +1,19 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
+if TYPE_CHECKING:
+    from matplotlib.axes import Axes  # type: ignore[import-not-found]
+else:  # pragma: no cover - type-checking only
+    Axes = Any
 
-def _require_matplotlib() -> object:
+
+def _require_matplotlib() -> Any:
     try:
-        import matplotlib.pyplot as plt
+        import matplotlib.pyplot as plt  # type: ignore[import-not-found]
     except Exception as exc:  # pragma: no cover - exercised in import error tests
         raise ImportError(
             "matplotlib is required for plotting. Install with "
@@ -19,12 +25,12 @@ def _require_matplotlib() -> object:
 def plot_spike_raster(
     spike_times_s: Sequence[np.ndarray] | np.ndarray,
     *,
-    ax: object | None = None,
+    ax: Axes | None = None,
     t_start_s: float | None = None,
     t_stop_s: float | None = None,
     color: str = "k",
     linewidth: float = 1.0,
-) -> object:
+) -> Axes:
     """Plot a simple spike raster.
 
     Parameters
@@ -44,6 +50,7 @@ def plot_spike_raster(
 
     if ax is None:
         _, ax = plt.subplots()
+    assert ax is not None
 
     if isinstance(spike_times_s, np.ndarray) and spike_times_s.ndim == 1:
         trains = [spike_times_s]
@@ -71,10 +78,10 @@ def plot_voltage_trace(
     t_s: np.ndarray,
     v: np.ndarray,
     *,
-    ax: object | None = None,
+    ax: Axes | None = None,
     color: str = "C0",
     linewidth: float = 1.5,
-) -> object:
+) -> Axes:
     """Plot a voltage trace."""
     # TODO: Add optional spike overlay markers. LABELS:utils,enhancement ASSIGNEE:diogoribeiro7
     # TODO: Add optional axis labels override. LABELS:utils,enhancement ASSIGNEE:diogoribeiro7
@@ -89,6 +96,7 @@ def plot_voltage_trace(
 
     if ax is None:
         _, ax = plt.subplots()
+    assert ax is not None
     ax.plot(t, v_arr, color=color, linewidth=linewidth)
     ax.set_xlabel("time (s)")
     ax.set_ylabel("voltage")
