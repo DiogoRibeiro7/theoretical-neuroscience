@@ -117,6 +117,7 @@ def fit_poisson_glm(
     # TODO: Add stronger regularization options (ridge). LABELS:encoding,enhancement ASSIGNEE:diogoribeiro7
     # TODO: Add a warm-start option for coefficients. LABELS:encoding,enhancement ASSIGNEE:diogoribeiro7
     # TODO: Add convergence diagnostics (deviance or log-likelihood trace). LABELS:encoding,analysis ASSIGNEE:diogoribeiro7
+    # TODO: Add fit diagnostics output (AIC/BIC). LABELS:encoding,analysis ASSIGNEE:diogoribeiro7
     y = require_1d_float_array(spikes, name="spikes")
     x_mat, valid_idx = build_design_matrix(stim, lags, add_intercept=add_intercept)
     y_valid = y[valid_idx]

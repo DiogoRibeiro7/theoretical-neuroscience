@@ -46,6 +46,7 @@ def fit_linear_rf(
     """
     # TODO: Add optional standardization for stimulus. LABELS:encoding,enhancement ASSIGNEE:diogoribeiro7
     # TODO: Add cross-validation helper for alpha. LABELS:encoding,analysis ASSIGNEE:diogoribeiro7
+    # TODO: Add support for multi-output receptive fields. LABELS:encoding,enhancement ASSIGNEE:diogoribeiro7
     x = require_1d_float_array(stim, name="stim")
     y = require_1d_float_array(spikes, name="spikes")
     lags_arr = np.asarray(lags, dtype=int)

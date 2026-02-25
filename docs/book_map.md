@@ -40,6 +40,7 @@ Format:
   - Target: `src/tneuro/decoding/`
   - Examples: `examples/bayesian_decoding.ipynb`
   - Notes: uses synthetic tuning curves and Poisson spike counts.
+  - TODO: Add multi-bin decoding notebook. LABELS:decoding,docs ASSIGNEE:diogoribeiro7
 
 - Reverse correlation / STA/STC (planned)
   - Target: `src/tneuro/encoding/reverse_correlation.py` (to be created)

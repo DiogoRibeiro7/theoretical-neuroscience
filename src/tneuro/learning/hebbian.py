@@ -5,3 +5,5 @@ from __future__ import annotations
 # TODO: Add a notebook example for Hebbian learning. LABELS:learning,docs ASSIGNEE:diogoribeiro7
 # TODO: Decide on normalization strategy for Hebbian updates. LABELS:learning,analysis ASSIGNEE:diogoribeiro7
 # TODO: Add a minimal API for Hebbian fit/predict. LABELS:learning,api ASSIGNEE:diogoribeiro7
+# TODO: Add optional weight decay to Hebbian updates. LABELS:learning,enhancement ASSIGNEE:diogoribeiro7
+# TODO: Add deterministic seed handling for learning demos. LABELS:learning,docs ASSIGNEE:diogoribeiro7

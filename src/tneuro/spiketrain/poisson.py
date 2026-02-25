@@ -76,6 +76,7 @@ def generate_inhom_poisson(
     """
     # TODO: Add an option to return the thinning acceptance ratio. LABELS:spiketrain,enhancement ASSIGNEE:diogoribeiro7
     # TODO: Add a fast path for constant rate without thinning. LABELS:spiketrain,performance ASSIGNEE:diogoribeiro7
+    # TODO: Add tests for edge cases with very low rates. LABELS:spiketrain,tests ASSIGNEE:diogoribeiro7
     t0 = float(t_start_s)
     t1 = float(t_stop_s)
     if not np.isfinite(t0) or not np.isfinite(t1) or t1 <= t0:

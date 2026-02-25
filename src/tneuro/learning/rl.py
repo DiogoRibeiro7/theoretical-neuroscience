@@ -7,3 +7,5 @@ from __future__ import annotations
 # TODO: Add type aliases for learning data structures. LABELS:learning,typing ASSIGNEE:diogoribeiro7
 # TODO: Add a simple bandit RL example. LABELS:learning,enhancement ASSIGNEE:diogoribeiro7
 # TODO: Add reward prediction error utilities. LABELS:learning,enhancement ASSIGNEE:diogoribeiro7
+# TODO: Add tabular Q-learning skeleton. LABELS:learning,enhancement ASSIGNEE:diogoribeiro7
+# TODO: Add tests for RL update equations. LABELS:learning,tests ASSIGNEE:diogoribeiro7

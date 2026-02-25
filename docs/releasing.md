@@ -16,3 +16,5 @@ PyPI publishing:
   configured with a Trusted Publisher for this repo and workflow.
 - Once the GitHub Release is published, the workflow should build and publish
   the package automatically.
+
+TODO: Add release dry-run checklist (test-pypi) before v0.2.0. LABELS:docs,process ASSIGNEE:diogoribeiro7
