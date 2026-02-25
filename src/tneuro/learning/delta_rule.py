@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional, Tuple
 
 import numpy as np
 
@@ -16,7 +15,7 @@ class DeltaRuleResult:
     losses: np.ndarray
 
 
-def _validate_supervised_xy(x: np.ndarray, y: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+def _validate_supervised_xy(x: np.ndarray, y: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     x_arr = np.asarray(x, dtype=float)
     y_arr = np.asarray(y, dtype=float)
     if x_arr.ndim != 2:
@@ -36,10 +35,10 @@ def delta_rule_fit(
     *,
     lr: float,
     n_epochs: int,
-    w0: Optional[np.ndarray] = None,
+    w0: np.ndarray | None = None,
     shuffle: bool = True,
     l2: float = 0.0,
-    seed: Optional[int] = None,
+    seed: int | None = None,
 ) -> DeltaRuleResult:
     """Fit a linear model with the delta rule (stochastic gradient descent).
 
@@ -83,10 +82,7 @@ def delta_rule_fit(
     losses = np.empty(n_epochs_val, dtype=float)
 
     for epoch in range(n_epochs_val):
-        if shuffle:
-            idx = rng.permutation(n_samples)
-        else:
-            idx = np.arange(n_samples)
+        idx = rng.permutation(n_samples) if shuffle else np.arange(n_samples)
 
         for i in idx:
             xi = x_arr[i]
