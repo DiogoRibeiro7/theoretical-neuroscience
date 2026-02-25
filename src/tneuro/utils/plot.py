@@ -75,6 +75,7 @@ def plot_voltage_trace(
     linewidth: float = 1.5,
 ) -> object:
     """Plot a voltage trace."""
+    # TODO: Add optional spike overlay markers. LABELS:utils,enhancement ASSIGNEE:diogoribeiro7
     plt = _require_matplotlib()
 
     t = np.asarray(t_s, dtype=float)

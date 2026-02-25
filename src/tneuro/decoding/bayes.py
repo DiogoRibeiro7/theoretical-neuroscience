@@ -33,6 +33,8 @@ def decode_bayes_poisson(
     map_index:
         Index of the maximum a posteriori (MAP) state.
     """
+    # TODO: Add vectorized decoding for multiple time bins. LABELS:decoding,enhancement ASSIGNEE:diogoribeiro7
+    # TODO: Add numerical-stability tests for extreme rates. LABELS:decoding,tests ASSIGNEE:diogoribeiro7
     rates = np.asarray(rate_hz, dtype=float)
     if rates.ndim != 2:
         raise ValueError("rate_hz must be 2D with shape (n_states, n_neurons).")

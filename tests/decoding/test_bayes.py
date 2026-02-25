@@ -35,3 +35,6 @@ def test_decode_bayes_poisson_zero_rate_with_spikes_impossible() -> None:
     assert np.isclose(posterior.sum(), 1.0)
     assert posterior[0] == 0.0
     assert map_idx == 1
+
+
+# TODO: Add a seeded Monte Carlo decoding accuracy test. LABELS:decoding,tests ASSIGNEE:diogoribeiro7
