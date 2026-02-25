@@ -135,6 +135,7 @@ class SpikeTrain:
         >>> counts
         array([2, 0, 1, 0])
         """
+        # TODO: Add optional return of bin centers. LABELS:spiketrain,enhancement ASSIGNEE:diogoribeiro7
         w = require_positive_scalar(bin_width_s, name="bin_width_s")
         edges = np.arange(self.t_start_s, self.t_stop_s + w, w, dtype=float)
         # Ensure last edge is exactly t_stop for reproducibility

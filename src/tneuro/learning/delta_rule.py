@@ -62,6 +62,8 @@ def delta_rule_fit(
     seed:
         Optional RNG seed for shuffling.
     """
+    # TODO: Add mini-batch option for SGD. LABELS:learning,enhancement ASSIGNEE:diogoribeiro7
+    # TODO: Add early stopping based on loss plateau. LABELS:learning,analysis ASSIGNEE:diogoribeiro7
     x_arr, y_arr = _validate_supervised_xy(x, y)
     lr_val = require_positive_scalar(lr, name="lr")
     n_epochs_val = int(require_positive_scalar(n_epochs, name="n_epochs"))

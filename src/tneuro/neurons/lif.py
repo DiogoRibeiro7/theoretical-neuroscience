@@ -114,6 +114,7 @@ def simulate_lif(
         Spike times (seconds).
     """
     # TODO: Add option to return refractory mask. LABELS:neurons,enhancement ASSIGNEE:diogoribeiro7
+    # TODO: Add option to return input current trace. LABELS:neurons,enhancement ASSIGNEE:diogoribeiro7
     params.validate()
     t_stop = require_positive_scalar(t_stop_s, name="t_stop_s")
     dt = require_positive_scalar(dt_s, name="dt_s")

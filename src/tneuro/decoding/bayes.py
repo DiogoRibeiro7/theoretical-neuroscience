@@ -36,6 +36,7 @@ def decode_bayes_poisson(
     # TODO: Add vectorized decoding for multiple time bins. LABELS:decoding,enhancement ASSIGNEE:diogoribeiro7
     # TODO: Add numerical-stability tests for extreme rates. LABELS:decoding,tests ASSIGNEE:diogoribeiro7
     # TODO: Add optional log-rate caching for repeated calls. LABELS:decoding,performance ASSIGNEE:diogoribeiro7
+    # TODO: Add posterior diagnostics (entropy/credible intervals). LABELS:decoding,analysis ASSIGNEE:diogoribeiro7
     rates = np.asarray(rate_hz, dtype=float)
     if rates.ndim != 2:
         raise ValueError("rate_hz must be 2D with shape (n_states, n_neurons).")

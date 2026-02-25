@@ -57,3 +57,4 @@ For a release tag (e.g., `vX.Y.Z`):
 - [ ] Notebooks (if added) follow the rules above and are reproducible.
 - [ ] Docs updated if public APIs or notebooks changed.
 - [ ] CI passes (or failures are understood and non-blocking).
+- [ ] TODO issues updated if new TODOs were added. LABELS:meta,process ASSIGNEE:diogoribeiro7

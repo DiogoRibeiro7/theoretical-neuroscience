@@ -18,3 +18,5 @@ Reproducibility cell (first or second code cell):
 Optional CI:
 - A lightweight notebook CI check can be added later (e.g., to verify metadata
   or run a smoke execution). This is intentionally not enforced yet.
+
+TODO: Add notebook metadata linting (tags, kernel). LABELS:docs,tests ASSIGNEE:diogoribeiro7

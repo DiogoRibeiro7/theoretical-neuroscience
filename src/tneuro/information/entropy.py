@@ -30,6 +30,7 @@ def entropy_discrete(x: Any, *, base: float = 2.0, method: str = "plugin") -> fl
     approximate and can still be biased when sample sizes are very small or
     when many categories are unobserved.
     """
+    # TODO: Add jackknife estimator for bias reduction. LABELS:information,enhancement ASSIGNEE:diogoribeiro7
     if base <= 0.0 or not np.isfinite(base):
         raise ValueError("base must be finite and > 0")
 

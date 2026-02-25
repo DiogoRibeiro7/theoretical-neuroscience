@@ -22,6 +22,7 @@ def mutual_info_discrete(x: Any, y: Any, *, base: float = 2.0) -> float:
     float
         Mutual information I(X; Y).
     """
+    # TODO: Add bias-corrected MI estimator. LABELS:information,enhancement ASSIGNEE:diogoribeiro7
     x_arr = np.asarray(x)
     y_arr = np.asarray(y)
     if x_arr.ndim != 1 or y_arr.ndim != 1:
