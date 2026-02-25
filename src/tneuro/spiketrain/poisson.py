@@ -2,11 +2,10 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
-from tneuro.typing import ArrayF
-
 import numpy as np
 
 from tneuro.spiketrain.core import SpikeTrain
+from tneuro.typing import ArrayF
 from tneuro.utils.validate import require_1d_float_array, require_non_negative_scalar
 
 RateFunc = Callable[[ArrayF | np.ndarray], ArrayF]

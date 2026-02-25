@@ -5,7 +5,6 @@ from dataclasses import dataclass
 import numpy as np
 
 from tneuro.typing import ArrayF
-
 from tneuro.utils.validate import require_non_negative_scalar, require_positive_scalar
 
 
