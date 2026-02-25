@@ -11,8 +11,8 @@ def test_fit_linear_rf_recovers_filter() -> None:
     true_rf = np.exp(-np.linspace(0.0, 2.0, lags.size))
     true_rf /= np.linalg.norm(true_rf)
 
-    X = np.stack([np.roll(stim, -lag) for lag in lags], axis=1)
-    spikes = X @ true_rf + rng.normal(0.0, 0.2, size=n)
+    x_mat = np.stack([np.roll(stim, -lag) for lag in lags], axis=1)
+    spikes = x_mat @ true_rf + rng.normal(0.0, 0.2, size=n)
 
     rf, _ = fit_linear_rf(stim, spikes, lags, alpha=1e-2)
     rf /= np.linalg.norm(rf)

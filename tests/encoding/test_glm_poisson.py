@@ -12,10 +12,10 @@ def test_poisson_glm_recovers_params() -> None:
     n = 6000
     stim = rng.normal(0.0, 1.0, size=n)
     lags = np.arange(-8, 1)
-    X, valid_idx = build_design_matrix(stim, lags, add_intercept=True)
+    x_mat, valid_idx = build_design_matrix(stim, lags, add_intercept=True)
 
-    true_coef = np.linspace(-0.5, 0.8, X.shape[1])
-    rate = predict_rate(X, true_coef)
+    true_coef = np.linspace(-0.5, 0.8, x_mat.shape[1])
+    rate = predict_rate(x_mat, true_coef)
     spikes = np.zeros(n, dtype=float)
     spikes[valid_idx] = rng.poisson(rate)
 
@@ -35,9 +35,9 @@ def test_poisson_glm_intercept_only() -> None:
     stim = rng.normal(0.0, 1.0, size=n)
     lags = np.array([0])
 
-    X, valid_idx = build_design_matrix(stim, lags, add_intercept=True)
+    x_mat, valid_idx = build_design_matrix(stim, lags, add_intercept=True)
     true_coef = np.array([-0.2, 0.0])
-    rate = predict_rate(X, true_coef)
+    rate = predict_rate(x_mat, true_coef)
     spikes = np.zeros(n, dtype=float)
     spikes[valid_idx] = rng.poisson(rate)
 

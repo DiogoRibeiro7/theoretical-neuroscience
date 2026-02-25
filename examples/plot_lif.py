@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import numpy as np
-
 from tneuro.neurons.lif import LIFParams, simulate_lif
 from tneuro.utils.plot import plot_spike_raster, plot_voltage_trace
 

@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable, Optional, Tuple, Union
+from typing import TypeAlias
 
 import numpy as np
 
@@ -51,7 +52,7 @@ class LIFParams:
             raise ValueError("Require v_th > v_reset for a meaningful threshold/reset.")
 
 
-Current: Union[float, np.ndarray, Callable[[np.ndarray], np.ndarray]]
+Current: TypeAlias = float | np.ndarray | Callable[[np.ndarray], np.ndarray]
 
 
 def _evaluate_current(
@@ -77,10 +78,10 @@ def simulate_lif(
     t_stop_s: float,
     dt_s: float,
     i_inj_a: Current,
-    v0: Optional[float] = None,
+    v0: float | None = None,
     noise_std_a: float = 0.0,
-    seed: Optional[int] = None,
-) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    seed: int | None = None,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Simulate a LIF neuron with Euler integration.
 
     Parameters

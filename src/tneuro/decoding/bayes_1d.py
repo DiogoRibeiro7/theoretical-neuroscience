@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from math import lgamma
-from typing import Tuple
 
 import numpy as np
 
@@ -17,7 +16,7 @@ def decode_position(
     peak_rate_hz: float | np.ndarray = 20.0,
     dt_s: float = 0.1,
     prior: np.ndarray | None = None,
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray]:
     """Decode position from place-cell spike counts with a Poisson model.
 
     Parameters

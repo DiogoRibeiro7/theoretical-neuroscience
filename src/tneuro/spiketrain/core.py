@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional, Tuple
 
 import numpy as np
 
@@ -52,9 +51,8 @@ class SpikeTrain:
             ts = np.sort(ts)
 
         # Allow empty trains; otherwise enforce bounds
-        if ts.size > 0:
-            if ts[0] < t0 or ts[-1] > t1:
-                raise ValueError("Spike times must lie within [t_start_s, t_stop_s].")
+        if ts.size > 0 and (ts[0] < t0 or ts[-1] > t1):
+            raise ValueError("Spike times must lie within [t_start_s, t_stop_s].")
 
         object.__setattr__(self, "times_s", ts)
         object.__setattr__(self, "t_start_s", t0)
@@ -110,7 +108,7 @@ class SpikeTrain:
             return float("nan")
         return float(np.std(isi, ddof=1) / mu) if isi.size > 1 else float("nan")
 
-    def bin_counts(self, *, bin_width_s: float) -> Tuple[np.ndarray, np.ndarray]:
+    def bin_counts(self, *, bin_width_s: float) -> tuple[np.ndarray, np.ndarray]:
         """Bin spikes into counts.
 
         Parameters

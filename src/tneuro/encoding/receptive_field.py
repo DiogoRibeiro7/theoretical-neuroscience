@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Tuple
-
 import numpy as np
 
 from tneuro.utils.validate import require_1d_float_array, require_non_negative_scalar
@@ -12,7 +10,7 @@ def fit_linear_rf(
     spikes: np.ndarray,
     lags: np.ndarray,
     alpha: float,
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray]:
     """Fit a linear receptive field using ridge regression.
 
     Parameters
@@ -65,14 +63,14 @@ def fit_linear_rf(
 
     n_rows = stop - start
     n_lags = lags_arr.size
-    X = np.empty((n_rows, n_lags), dtype=float)
+    x_mat = np.empty((n_rows, n_lags), dtype=float)
     for j, lag in enumerate(lags_arr):
         idx = np.arange(start, stop) + lag
-        X[:, j] = x[idx]
+        x_mat[:, j] = x[idx]
 
     y_valid = y[start:stop]
-    xtx = X.T @ X
+    xtx = x_mat.T @ x_mat
     xtx.flat[:: n_lags + 1] += alpha_val
-    rf = np.linalg.solve(xtx, X.T @ y_valid)
+    rf = np.linalg.solve(xtx, x_mat.T @ y_valid)
 
     return rf, lags_arr

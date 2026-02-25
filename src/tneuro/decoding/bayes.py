@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Optional, Tuple
-
 import numpy as np
 
 from tneuro.utils.validate import require_1d_float_array, require_positive_scalar
@@ -12,8 +10,8 @@ def decode_bayes_poisson(
     spike_counts: np.ndarray,
     *,
     dt_s: float,
-    prior: Optional[np.ndarray] = None,
-) -> Tuple[np.ndarray, int]:
+    prior: np.ndarray | None = None,
+) -> tuple[np.ndarray, int]:
     """Bayesian decoding with independent Poisson spike counts.
 
     Parameters

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from math import lgamma
-from typing import Tuple
 
 import numpy as np
 
@@ -25,7 +24,7 @@ def build_design_matrix(
     lags: np.ndarray,
     *,
     add_intercept: bool = True,
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray]:
     """Construct a design matrix from a 1D stimulus and integer lags.
 
     Parameters
@@ -60,21 +59,21 @@ def build_design_matrix(
     n_rows = valid_idx.size
     n_lags = lags_arr.size
 
-    X = np.empty((n_rows, n_lags + (1 if add_intercept else 0)), dtype=float)
+    x_mat = np.empty((n_rows, n_lags + (1 if add_intercept else 0)), dtype=float)
     col = 0
     if add_intercept:
-        X[:, 0] = 1.0
+        x_mat[:, 0] = 1.0
         col = 1
 
     for j, lag in enumerate(lags_arr):
-        X[:, col + j] = x[valid_idx + lag]
+        x_mat[:, col + j] = x[valid_idx + lag]
 
-    return X, valid_idx
+    return x_mat, valid_idx
 
 
-def predict_rate(X: np.ndarray, coef: np.ndarray) -> np.ndarray:
+def predict_rate(x_mat: np.ndarray, coef: np.ndarray) -> np.ndarray:
     """Predict Poisson rate using a log link."""
-    eta = X @ coef
+    eta = x_mat @ coef
     return np.exp(eta)
 
 
@@ -116,9 +115,9 @@ def fit_poisson_glm(
         Convergence tolerance on coefficient change (L2 norm).
     """
     y = require_1d_float_array(spikes, name="spikes")
-    X, valid_idx = build_design_matrix(stim, lags, add_intercept=add_intercept)
+    x_mat, valid_idx = build_design_matrix(stim, lags, add_intercept=add_intercept)
     y_valid = y[valid_idx]
-    if y_valid.shape[0] != X.shape[0]:
+    if y_valid.shape[0] != x_mat.shape[0]:
         raise ValueError("spikes must align with stim after lagging.")
     if np.any(y_valid < 0.0) or not np.all(np.isfinite(y_valid)):
         raise ValueError("spikes must be finite and non-negative.")
@@ -127,18 +126,18 @@ def fit_poisson_glm(
     if max_iter <= 0:
         raise ValueError("max_iter must be positive.")
 
-    n_features = X.shape[1]
+    n_features = x_mat.shape[1]
     coef = np.zeros(n_features, dtype=float)
     converged = False
 
     for i in range(max_iter):
-        eta = X @ coef
+        eta = x_mat @ coef
         mu = np.exp(eta)
-        W = mu
+        w = mu
         z = eta + (y_valid - mu) / mu
 
-        xtw = X.T * W
-        fisher = xtw @ X
+        xtw = x_mat.T * w
+        fisher = xtw @ x_mat
         rhs = xtw @ z
         try:
             coef_new = np.linalg.solve(fisher, rhs)
@@ -154,10 +153,10 @@ def fit_poisson_glm(
     else:
         n_iter = max_iter
 
-    eta = X @ coef
+    eta = x_mat @ coef
     mu = np.exp(eta)
-    xtw = X.T * mu
-    fisher = xtw @ X
+    xtw = x_mat.T * mu
+    fisher = xtw @ x_mat
     try:
         cov = np.linalg.inv(fisher)
     except np.linalg.LinAlgError:

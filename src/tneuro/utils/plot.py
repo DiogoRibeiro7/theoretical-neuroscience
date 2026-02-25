@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional, Sequence
+from collections.abc import Sequence
 
 import numpy as np
 
@@ -19,9 +19,9 @@ def _require_matplotlib() -> object:
 def plot_spike_raster(
     spike_times_s: Sequence[np.ndarray] | np.ndarray,
     *,
-    ax: Optional[object] = None,
-    t_start_s: Optional[float] = None,
-    t_stop_s: Optional[float] = None,
+    ax: object | None = None,
+    t_start_s: float | None = None,
+    t_stop_s: float | None = None,
     color: str = "k",
     linewidth: float = 1.0,
 ) -> object:
@@ -70,7 +70,7 @@ def plot_voltage_trace(
     t_s: np.ndarray,
     v: np.ndarray,
     *,
-    ax: Optional[object] = None,
+    ax: object | None = None,
     color: str = "C0",
     linewidth: float = 1.5,
 ) -> object:

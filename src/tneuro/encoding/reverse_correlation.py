@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Tuple
-
 import numpy as np
 
 from tneuro.utils.validate import require_1d_float_array, require_positive_scalar
@@ -11,8 +9,8 @@ def spike_triggered_average(
     stim: np.ndarray,
     spike_times: np.ndarray,
     fs_hz: float,
-    window_s: Tuple[float, float],
-) -> Tuple[np.ndarray, np.ndarray]:
+    window_s: tuple[float, float],
+) -> tuple[np.ndarray, np.ndarray]:
     """Compute the spike-triggered average (STA) of a 1D stimulus.
 
     Spikes too close to the stimulus boundaries are discarded so that each

@@ -32,7 +32,7 @@ def mutual_info_discrete(x: Any, y: Any, *, base: float = 2.0) -> float:
         return 0.0
 
     pairs = np.empty(x_arr.size, dtype=object)
-    pairs[:] = list(zip(x_arr, y_arr))
+    pairs[:] = list(zip(x_arr, y_arr, strict=False))
     h_x = entropy_discrete(x_arr, base=base, method="plugin")
     h_y = entropy_discrete(y_arr, base=base, method="plugin")
     h_xy = entropy_discrete(pairs, base=base, method="plugin")

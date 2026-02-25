@@ -1,13 +1,11 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import Optional
 
 import numpy as np
 
 from tneuro.spiketrain.core import SpikeTrain
 from tneuro.utils.validate import require_1d_float_array, require_non_negative_scalar
-
 
 RateFunc = Callable[[np.ndarray], np.ndarray]
 
@@ -52,9 +50,9 @@ def generate_inhom_poisson(
     *,
     t_start_s: float,
     t_stop_s: float,
-    t_grid_s: Optional[np.ndarray] = None,
-    rate_hz_max: Optional[float] = None,
-    seed: Optional[int] = None,
+    t_grid_s: np.ndarray | None = None,
+    rate_hz_max: float | None = None,
+    seed: int | None = None,
 ) -> SpikeTrain:
     """Generate an inhomogeneous Poisson spike train using thinning.
 
@@ -90,7 +88,8 @@ def generate_inhom_poisson(
             _require_increasing_grid(t_grid)
             rate_grid = _rate_from_callable(t_grid, rate_fn=rate_hz)
             rate_hz_max = float(np.max(rate_grid)) if rate_grid.size > 0 else 0.0
-        rate_fn = lambda t: _rate_from_callable(t, rate_fn=rate_hz)
+        def rate_fn(t: np.ndarray) -> np.ndarray:
+            return _rate_from_callable(t, rate_fn=rate_hz)
     else:
         if t_grid_s is None:
             raise ValueError("t_grid_s is required when rate_hz is an array.")
@@ -102,7 +101,8 @@ def generate_inhom_poisson(
         if t_grid[0] > t0 or t_grid[-1] < t1:
             raise ValueError("t_grid_s must cover [t_start_s, t_stop_s].")
         rate_hz_max = float(np.max(rate_grid)) if rate_grid.size > 0 else 0.0
-        rate_fn = lambda t: _rate_from_grid(t, t_grid_s=t_grid, rate_hz=rate_grid)
+        def rate_fn(t: np.ndarray) -> np.ndarray:
+            return _rate_from_grid(t, t_grid_s=t_grid, rate_hz=rate_grid)
 
     rate_hz_max = require_non_negative_scalar(rate_hz_max, name="rate_hz_max")
     if rate_hz_max == 0.0:
