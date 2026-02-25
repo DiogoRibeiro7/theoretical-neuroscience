@@ -207,6 +207,26 @@ jobs:
                       body_matches.add((match[0], int(match[1])))
                   for match in re.findall(r"([\\w./-]+\\.[A-Za-z0-9]+)#L([0-9]+)", body):
                       body_matches.add((match[0], int(match[1])))
+                  for match in re.findall(
+                      r"github\\.com/[^/]+/[^/]+/blob/[^/]+/([^#]+)#L([0-9]+)(?:-L([0-9]+))?",
+                      body,
+                  ):
+                      path = match[0]
+                      start = int(match[1])
+                      end = int(match[2]) if match[2] else start
+                      for line_no in range(start, end + 1):
+                          body_matches.add((path, line_no))
+
+                  for match in re.findall(
+                      r"^[\\s>]*([^\\s]+\\.[A-Za-z0-9]+)\\s*\\n\\s*Lines\\s+(\\d+)\\s+to\\s+(\\d+)",
+                      body,
+                      re.MULTILINE,
+                  ):
+                      path = match[0].strip()
+                      start = int(match[1])
+                      end = int(match[2])
+                      for line_no in range(start, end + 1):
+                          body_matches.add((path, line_no))
 
                   has_loc_match = False
                   if body_matches:
