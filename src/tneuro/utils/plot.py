@@ -39,6 +39,7 @@ def plot_spike_raster(
     color, linewidth:
         Line styling.
     """
+    # TODO: Add support for per-trial colors. LABELS:utils,enhancement ASSIGNEE:diogoribeiro7
     plt = _require_matplotlib()
 
     if ax is None:

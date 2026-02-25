@@ -108,6 +108,8 @@ class SpikeTrain:
             return float("nan")
         return float(np.std(isi, ddof=1) / mu) if isi.size > 1 else float("nan")
 
+    # TODO: Add burstiness metric helper. LABELS:spiketrain,enhancement ASSIGNEE:diogoribeiro7
+
     def bin_counts(self, *, bin_width_s: float) -> tuple[np.ndarray, np.ndarray]:
         """Bin spikes into counts.
 
