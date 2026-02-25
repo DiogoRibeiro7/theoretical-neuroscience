@@ -32,7 +32,6 @@ Notebook rules:
   - Notebook should run in <= 2 minutes on a typical laptop.
 
 Rule: **No chapter notebook without adding at least one reusable function + tests.**
-TODO: Add learning module implementation to satisfy book-complete criteria. LABELS:learning,enhancement ASSIGNEE:diogoribeiro7
 
 ## Testing rules
 

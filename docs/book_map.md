@@ -48,6 +48,5 @@ Format:
 
 - Learning: delta rule / simple RL (planned)
   - Target: `src/tneuro/learning/`
-  - Examples: `examples/learning_delta_rule.ipynb` (planned)
+  - Examples: `examples/learning_delta_rule.ipynb`
   - Notes: synthetic tasks by default; no external datasets required.
-  - TODO: Add learning module + tests + notebook per DoD. LABELS:learning,docs,tests ASSIGNEE:diogoribeiro7
