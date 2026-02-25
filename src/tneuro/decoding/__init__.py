@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from .bayes_1d import decode_position
+from .bayes import decode_bayes_poisson
 
 __all__ = [
-    "decode_position",
+    "decode_bayes_poisson",
 ]

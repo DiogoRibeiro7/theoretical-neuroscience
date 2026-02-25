@@ -1,0 +1,20 @@
+site_name: theoretical-neuroscience
+site_description: Theoretical neuroscience tools in Python.
+repo_url: https://github.com/diogoribeiro7/theoretical-neuroscience
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.instant
+    - navigation.sections
+    - toc.integrate
+plugins:
+  - search
+  - mkdocstrings
+nav:
+  - Overview: index.md
+  - Spike Trains: spike-trains.md
+  - Neurons: neurons.md
+  - Encoding: encoding.md
+  - Decoding: decoding.md
+  - Information Theory: information-theory.md

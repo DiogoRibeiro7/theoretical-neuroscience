@@ -61,6 +61,7 @@ Current stable API surface (import paths shown):
 - `tneuro.spiketrain`: `SpikeTrain`, `fano_factor_counts`, `fano_factor_spiketrain`
 - `tneuro.neurons`: `LIFParams`, `simulate_lif`
 - `tneuro.information`: `entropy_discrete`
+- `tneuro.decoding`: `decode_bayes_poisson`
 
 Short examples:
 
@@ -81,6 +82,56 @@ from tneuro.spiketrain.stats import fano_factor_spiketrain
 st = SpikeTrain(times_s=np.array([0.1, 0.13, 0.9, 1.2]), t_start_s=0.0, t_stop_s=2.0)
 ff = fano_factor_spiketrain(st, bin_width_s=0.5)
 print(ff)
+```
+
+```python
+import numpy as np
+from tneuro.information import entropy_discrete
+
+x = np.array([0, 0, 1, 1, 1, 2])
+print(entropy_discrete(x, base=2.0, method="miller_madow"))
+```
+
+Limitations:
+The Miller-Madow correction is a first-order bias correction for the plug-in
+estimator. It can still be biased for very small samples, and it does not
+account for categories that never appear in the sample. In those regimes, the
+correction may over- or under-compensate.
+
+```python
+import numpy as np
+from tneuro.neurons.lif import LIFParams, simulate_lif
+from tneuro.utils.plot import plot_spike_raster, plot_voltage_trace
+
+params = LIFParams(
+    tau_m_s=0.02,
+    v_rest=0.0,
+    v_reset=0.0,
+    v_th=1.0,
+    r_m_ohm=1.0,
+    refractory_s=0.002,
+)
+t, v, spikes = simulate_lif(
+    params=params,
+    t_stop_s=0.5,
+    dt_s=1e-4,
+    i_inj_a=1.2,
+    noise_std_a=0.0,
+    seed=123,
+)
+
+plot_voltage_trace(t, v)
+plot_spike_raster(spikes)
+```
+
+```python
+import numpy as np
+from tneuro.decoding.bayes import decode_bayes_poisson
+
+rate_hz = np.array([[5.0, 1.0], [1.0, 5.0]])
+spike_counts = np.array([3.0, 0.0])
+posterior, map_idx = decode_bayes_poisson(rate_hz, spike_counts, dt_s=1.0)
+print(posterior, map_idx)
 ```
 
 ## Development
