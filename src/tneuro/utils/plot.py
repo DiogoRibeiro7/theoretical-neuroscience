@@ -6,14 +6,14 @@ from typing import TYPE_CHECKING, Any
 import numpy as np
 
 if TYPE_CHECKING:
-    from matplotlib.axes import Axes
+    from matplotlib.axes import Axes  # type: ignore[import-not-found]
 else:  # pragma: no cover - type-checking only
     Axes = Any
 
 
 def _require_matplotlib() -> Any:
     try:
-        import matplotlib.pyplot as plt
+        import matplotlib.pyplot as plt  # type: ignore[import-not-found]
     except Exception as exc:  # pragma: no cover - exercised in import error tests
         raise ImportError(
             "matplotlib is required for plotting. Install with "
