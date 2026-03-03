@@ -36,18 +36,18 @@ Format:
   - Examples: `examples/information_basic.ipynb` (planned)
   - Notes: discrete estimators; bias corrections approximate for small samples.
 
-- Decoding: Bayesian decoding (planned)
+- Decoding: Bayesian decoding
   - Target: `src/tneuro/decoding/`
-  - Examples: `examples/bayesian_decoding.ipynb`
+  - Examples: `examples/bayesian_decoding.ipynb`, `examples/place_cell_decode_1d.ipynb`
   - Notes: uses synthetic tuning curves and Poisson spike counts.
   - TODO: Add multi-bin decoding notebook. LABELS:decoding,docs ASSIGNEE:diogoribeiro7
 
-- Reverse correlation / STA/STC (planned)
-  - Target: `src/tneuro/encoding/reverse_correlation.py` (to be created)
+- Reverse correlation / STA/STC
+  - Target: `src/tneuro/encoding/reverse_correlation.py`
   - Examples: `examples/sta_stc.ipynb` (planned)
   - Notes: requires stimulus-response datasets or simulated stimuli.
 
-- Learning: delta rule / simple RL (planned)
+- Learning: delta rule / simple RL
   - Target: `src/tneuro/learning/`
   - Examples: `examples/learning_delta_rule.ipynb`
   - Notes: synthetic tasks by default; no external datasets required.

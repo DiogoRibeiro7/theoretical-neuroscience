@@ -5,36 +5,12 @@ import numpy as np
 from tneuro.utils.validate import require_1d_float_array, require_positive_scalar
 
 
-def spike_triggered_average(
+def _collect_windows(
     stim: np.ndarray,
     spike_times: np.ndarray,
     fs_hz: float,
     window_s: tuple[float, float],
 ) -> tuple[np.ndarray, np.ndarray]:
-    """Compute the spike-triggered average (STA) of a 1D stimulus.
-
-    Spikes too close to the stimulus boundaries are discarded so that each
-    included spike has a full window available.
-
-    Parameters
-    ----------
-    stim:
-        1D stimulus array sampled at ``fs_hz``.
-    spike_times:
-        1D array of spike times in seconds.
-    fs_hz:
-        Sampling rate in Hz.
-    window_s:
-        Tuple ``(t_pre_s, t_post_s)`` specifying the window before and after
-        each spike.
-
-    Returns
-    -------
-    sta:
-        Spike-triggered average over the valid spikes.
-    lags_s:
-        Time lags (seconds) corresponding to ``sta``.
-    """
     x = require_1d_float_array(stim, name="stim")
     t_spike = require_1d_float_array(spike_times, name="spike_times")
     fs = require_positive_scalar(fs_hz, name="fs_hz")
@@ -60,9 +36,44 @@ def spike_triggered_average(
     if spike_idx.size == 0:
         raise ValueError("No spikes have a full window within the stimulus bounds.")
 
-    sta = np.zeros(lags_s.shape, dtype=float)
-    for idx in spike_idx:
-        sta += x[idx - n_pre : idx + n_post + 1]
-    sta /= float(spike_idx.size)
+    windows = np.empty((spike_idx.size, lags_s.size), dtype=float)
+    for i, idx in enumerate(spike_idx):
+        windows[i] = x[idx - n_pre : idx + n_post + 1]
 
+    return windows, lags_s
+
+
+def spike_triggered_average(
+    stim: np.ndarray,
+    spike_times: np.ndarray,
+    fs_hz: float,
+    window_s: tuple[float, float],
+) -> tuple[np.ndarray, np.ndarray]:
+    """Compute the spike-triggered average (STA) of a 1D stimulus.
+
+    Spikes too close to the stimulus boundaries are discarded so that each
+    included spike has a full window available.
+    """
+    windows, lags_s = _collect_windows(stim, spike_times, fs_hz, window_s)
+    sta = np.mean(windows, axis=0)
     return sta, lags_s
+
+
+def spike_triggered_covariance(
+    stim: np.ndarray,
+    spike_times: np.ndarray,
+    fs_hz: float,
+    window_s: tuple[float, float],
+) -> tuple[np.ndarray, np.ndarray]:
+    """Compute the spike-triggered covariance (STC) of a 1D stimulus."""
+    windows, lags_s = _collect_windows(stim, spike_times, fs_hz, window_s)
+    if windows.shape[0] < 2:
+        raise ValueError("Need at least 2 spikes to compute covariance.")
+    cov = np.cov(windows, rowvar=False, bias=False)
+    return cov, lags_s
+
+
+__all__ = [
+    "spike_triggered_average",
+    "spike_triggered_covariance",
+]

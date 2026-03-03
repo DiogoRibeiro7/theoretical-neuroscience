@@ -1,6 +1,6 @@
 import numpy as np
 
-from tneuro.encoding.reverse_correlation import spike_triggered_average
+from tneuro.encoding.reverse_correlation import spike_triggered_average, spike_triggered_covariance
 
 
 def test_spike_triggered_average_correlates_with_filter() -> None:
@@ -48,3 +48,20 @@ def test_spike_triggered_average_discards_edge_spikes() -> None:
 
     assert sta.shape == lags_s.shape
     assert np.allclose(sta, 0.0)
+
+
+def test_spike_triggered_covariance_matches_manual() -> None:
+    stim = np.arange(10.0)
+    spike_times = np.array([2.0, 4.0, 7.0])
+    cov, lags_s = spike_triggered_covariance(
+        stim,
+        spike_times,
+        fs_hz=1.0,
+        window_s=(1.0, 0.0),
+    )
+
+    windows = np.array([[1.0, 2.0], [3.0, 4.0], [6.0, 7.0]])
+    expected = np.cov(windows, rowvar=False, bias=False)
+    assert cov.shape == expected.shape
+    assert np.allclose(cov, expected)
+    assert np.allclose(lags_s, np.array([-1.0, 0.0]))

@@ -5,6 +5,8 @@ These rules keep notebooks consistent and easy to review.
 Naming convention:
 - Use `snake_case.ipynb` (e.g., `lif_basics.ipynb`, `glm_poisson.ipynb`).
 - Prefer a short, descriptive name over chapter numbers.
+- Start new notebooks from `examples/TEMPLATE.ipynb`; see
+  `examples/template_example.ipynb` for a minimal filled-in example.
 
 Required sections (as markdown cells):
 - **Goal**: what question the notebook answers.
